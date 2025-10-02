@@ -38,3 +38,7 @@ jobs:
 
   test:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: echo "Test job"
