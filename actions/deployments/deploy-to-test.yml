@@ -2,9 +2,10 @@ name: Deploy to Test
 version: 0.0.0
 description: Deploy application to the test environment once changes have been pushed to main and built successfully.
 
-on: [push]
-  branches:
-    - main
+on:
+  push:
+    branches:
+      - main
 
 env:
   KUBECONFIG: ${{ secrets.KUBECONFIG }}
