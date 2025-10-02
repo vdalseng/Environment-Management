@@ -37,6 +37,7 @@ jobs:
   deploy-test:
     # Needs build to be successful before deploying to test
     needs: build
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
