@@ -1,0 +1,44 @@
+name: Build
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+
+env:
+  CI: true
+  DOCKER_IMAGE: ghcr.io/${{ github.repository }}:${{ github.run_number }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      run: docker build -t $DOCKER_IMAGE .
+      working-directory: .
+    
+    - name: Save Docker image as artifact
+      run: docker save $DOCKER_IMAGE -o ${{ github.repository }}.tar
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifact
+        path: ${{ github.repository }}.tar
+        retention-days: 7
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: echo "Test job"
