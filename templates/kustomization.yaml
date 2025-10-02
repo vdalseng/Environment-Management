@@ -1,0 +1,8 @@
+resources:
+- applications/app-deployment.yaml
+- controllers/hpa.yaml
+- services/service.yaml
+- configmaps/configmap.yaml
+- secrets/secret.yaml
+- ingress/ingress.yaml
+- namespaces/namespace.yaml
