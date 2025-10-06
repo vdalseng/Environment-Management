@@ -9,7 +9,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  DOCKER_IMAGE: ghcr.io/${{ github.repository }}:${{ github.run_number }}
+  DOCKER_IMAGE: ghcr.io/${{ github.event.repository.name }}:${{ github.run_number }}
   KUBECONFIG: ${{ secrets.KUBECONFIG }}
   GITHUB_REPO: ${{ github.event.repository.name }}
 
