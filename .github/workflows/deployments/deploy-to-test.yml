@@ -9,9 +9,9 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  DOCKER_IMAGE: ghcr.io/${{ github.repository.toLowerCase() }}:${{ github.run_number }}
+  DOCKER_IMAGE: ghcr.io/${{ github.repository }}:${{ github.run_number }}
   KUBECONFIG: ${{ secrets.KUBECONFIG }}
-  GITHUB_REPO: ${{ github.repository.toLowerCase() }}
+  GITHUB_REPO: ${{ github.repository }}
 
 jobs:
   build:
