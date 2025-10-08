@@ -1,0 +1,77 @@
+name: Deploy to Test
+description: Deploy application to the test environment once changes have been pushed to main and built successfully.
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  IMAGE_NAME: ${{ github.event.repository.name }}
+  BUILD_ID: ${{ github.sha }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image-full: ${{ github.event.repository.name }}:${{ github.sha }}
+      artifact-name: ${{ github.event.repository.name }}-${{ github.sha }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install Podman
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y podman
+    
+    - name: Build container image with Podman
+      run: |
+        podman build \
+          --tag ${{ env.IMAGE_NAME }}:${{ env.BUILD_ID }} \
+          --tag ${{ env.IMAGE_NAME }}:latest \
+          --file Dockerfile \
+          .
+    
+    - name: Save container image as artifact
+      run: |
+        podman save \
+          --output ${{ env.IMAGE_NAME }}-${{ env.BUILD_ID }}.tar \
+          ${{ env.IMAGE_NAME }}:${{ env.BUILD_ID }}
+          ${{ env.IMAGE_NAME }}:latest
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.IMAGE_NAME }}-${{ env.BUILD_ID }}
+        path: ${{ env.IMAGE_NAME }}-${{ env.BUILD_ID }}.tar
+        retention-days: 7
+
+  deploy-test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Podman
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y podman
+
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ needs.build.outputs.artifact-name }}
+
+    - name: Load container image
+      run: |
+        podman load --input ${{ needs.build.outputs.artifact-name }}.tar
+        podman images
+
+    # - name: Deploy to Test Environment
+    # TODO: Finish this step later when we know where to deploy
+      
