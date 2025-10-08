@@ -39,7 +39,7 @@ jobs:
       run: |
         podman save \
           --output ${{ env.IMAGE_NAME }}-${{ env.BUILD_ID }}.tar \
-          ${{ env.IMAGE_NAME }}:${{ env.BUILD_ID }}
+          ${{ env.IMAGE_NAME }}:${{ env.BUILD_ID }} \
           ${{ env.IMAGE_NAME }}:latest
 
     - name: Upload build artifact
